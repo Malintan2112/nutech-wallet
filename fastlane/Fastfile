@@ -1,0 +1,116 @@
+platform :android do 
+  lane :build do     
+     gradle(task: 'clean', project_dir: 'android/')     
+     gradle(
+        task: 'assemble', 
+        build_type: 'release', 
+        project_dir: 'android/',
+        flavor: ENV["ANDROID_FLAVOUR"]
+     )   
+  end
+
+  lane :bundle do     
+     gradle(task: 'clean', project_dir: 'android/')     
+     gradle(
+        task: "bundle",
+        build_type: "Release",
+        project_dir: 'android/',
+        flavor: ENV["ANDROID_FLAVOUR"]
+    )  
+  end
+
+  desc 'upload to firebase distribute'
+  lane :upload_firebase do |options|
+    firebase_app_distribution(
+        app: options[:appid],
+        groups: "mobile",
+        android_artifact_type: "AAB",
+        android_artifact_path: "./android/app/build/outputs/bundle/release/app-release.aab",
+        firebase_cli_token: options[:token]
+    )
+ end
+
+  desc 'Build and upload to App Center.'
+    lane :prod do |options|
+      build
+      upload_appcenter(env: "prod", token: options[:token], app_name: options[:app_name])
+    end
+  
+    desc 'Build and upload to App Center.'
+    lane :dev do |options|
+      build
+      upload_appcenter(env: "dev", token: options[:token], app_name: options[:app_name])
+    end
+
+    desc 'upload to appcenter'
+    lane :upload_appcenter do |options|
+      changelog = File.read("./changelog.txt")
+      content = load_json(json_path: "./fastlane/appcenter-config.json")
+      param = content["android"][options[:env]]
+      appcenter_upload(
+          api_token: options[:token] ? options[:token] : param["api_token"],
+          owner_name: param["owner_name"],
+          app_name: options[:app_name] ? options[:app_name] : param["app_name"],
+          destinations: "*",
+          file: "./android/app/build/outputs/apk/release/app-release.apk",
+          release_notes: changelog,
+      )
+    end
+
+    desc 'Build and upload to Google Play for Internal Testing.'
+    lane :upload_internal do
+        # increment_version_name(gradle_file_path: './android/app/build.gradle')
+        # increment_version_code(gradle_file_path: './android/app/build.gradle')
+        bundle
+        validate_play_store_json_key(json_key: './fastlane/google-play-api-key.json')
+        upload_to_play_store(
+            track: 'internal',
+            package_name: 'com.mobileappruparupa',
+            aab: './android/app/build/outputs/bundle/release/app-release.aab',
+            json_key: './fastlane/google-play-api-key.json'
+        )
+    end
+
+    desc 'Build and upload to App Center.'
+    lane :codepush do
+        changelog = File.read("./changelog.txt")
+        content = load_json(json_path: "./fastlane/appcenter-config.json")
+        param = content["android"]["dev"]
+        codepush_login(login_token: param["api_token"])
+        codepush_release_react(
+            app_name: param["owner_name"] + "/" + param["app_name"],
+            deployment_name: param["deployment_name"],
+            target_binary_version: param["binary_version"],
+            mandatory: param["mandatory"]
+        )
+    end
+
+    desc 'Build and upload to App Center.'
+    lane :codepush_production do
+        changelog = File.read("./changelog.txt")
+        content = load_json(json_path: "./fastlane/appcenter-config.json")
+        param = content["android"]["prod"]
+        codepush_login(login_token: param["api_token"])
+        codepush_release_react(
+            app_name: param["owner_name"] + "/" + param["app_name"],
+            deployment_name: param["deployment_name"],
+            target_binary_version: param["binary_version"],
+            mandatory: param["mandatory"]
+        )
+    end
+
+    desc 'Build and upload to App Center.'
+    lane :codepush_testing_production do
+        changelog = File.read("./changelog.txt")
+        content = load_json(json_path: "./fastlane/appcenter-config.json")
+        param = content["android"]["prod"]
+        codepush_login(login_token: param["api_token"])
+        codepush_release_react(
+            app_name: param["owner_name"] + "/" + param["app_name"],
+            deployment_name: "TestingProduction",
+            target_binary_version: param["binary_version"],
+            mandatory: param["mandatory"]
+        )
+    end
+  
+end

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="fastlane.lanes">
+    
+    
+    
+      
+      <testcase classname="fastlane.lanes" name="0: Switch to android build lane" time="0.000287">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="1: clean" time="17.872578">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="2: assemblerelease" time="74.791439">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="3: Switch to android upload_appcenter lane" time="0.000324">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="4: load_json" time="0.001335">
+        
+      </testcase>
+    
+      
+      <testcase classname="fastlane.lanes" name="5: appcenter_upload" time="73.289491">
+        
+      </testcase>
+    
+  </testsuite>
+</testsuites>

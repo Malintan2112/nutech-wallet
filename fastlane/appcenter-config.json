@@ -1,0 +1,39 @@
+{
+  "android": {
+    "dev": {
+      "api_token": "ef5af209780ed9ecbd228cdfe9d740b8cb3370e4",
+      "owner_name": "Kreasi-Putra-Nusantara",
+      "app_name": "artetis",
+      "deployment_name": "Staging"
+    },
+    "prod": {
+      "api_token": "ef5af209780ed9ecbd228cdfe9d740b8cb3370e4",
+      "owner_name": "tech.ruparupa",
+      "app_name": "Android-OS",
+      "deployment_name": "Production",
+      "binary_version": "2.0.0",
+      "mandatory": true
+    }
+  },
+  "ios": {
+    "dev": {
+      "api_token": "a089ea8a27d4bd9821548751aabb0f90ff9d2ef4",
+      "owner_name": "ruparupa-mobileapps",
+      "app_name": "RR3-ios",
+      "deployment_name": "Staging"
+    },
+    "prod": {
+      "api_token": "1f588492060ecf64bc30a25ad2167c169a215670",
+      "owner_name": "tech.ruparupa",
+      "app_name": "iOS",
+      "deployment_name": "Production",
+      "binary_version": "2.0.0",
+      "mandatory": true
+    },
+    "testflight": {
+      "username": "rickyfabian999@gmail.com",
+      "app_identifier": "com.ruparupa.ios.dev",
+      "app_name": "ruparupa.storemode.ios"
+    }
+  }
+}

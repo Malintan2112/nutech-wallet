@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Nutech Wallet</string>
+    <string moduleConfig="true" name="CodePushDeploymentKey">Vi_H_VDMzbhwMQ-8C4jc2sJus7yNJdxrDmiqT</string>
+</resources>
