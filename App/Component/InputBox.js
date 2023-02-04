@@ -120,7 +120,7 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
               <View style={{ justifyContent: 'center', paddingHorizontal: 10 }}>
                 <Icon name='calendar-week' size={20} color='#313339' />
               </View>
-            )
+              )
             : null
         }
         {
@@ -129,7 +129,7 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
               <View style={{ justifyContent: 'center', paddingHorizontal: 10 }}>
                 <Icon name='chevron-down' size={20} color='#313339' />
               </View>
-            )
+              )
             : null
         }
       </View>

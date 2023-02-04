@@ -1,7 +1,7 @@
 import { take, fork } from 'redux-saga/effects'
 import { END } from 'redux-saga'
 
-export function* baseListen(type, fetchSaga, api, token, getStoreNewRetailData) {
+export function * baseListen (type, fetchSaga, api, token, getStoreNewRetailData) {
   let action = yield take(type)
   while (action !== END) {
     if (token) {
@@ -12,4 +12,3 @@ export function* baseListen(type, fetchSaga, api, token, getStoreNewRetailData) 
     action = yield take(type)
   }
 }
-

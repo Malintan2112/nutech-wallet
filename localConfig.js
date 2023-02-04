@@ -6,7 +6,7 @@ const config = {
   codePushProd: true,
   smartlookEnableRecord: false,
   multistg: 'dplscv2',
-  companyCode: 'ODI',
-};
+  companyCode: 'ODI'
+}
 
-export default config;
+export default config

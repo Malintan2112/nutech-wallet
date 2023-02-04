@@ -8,47 +8,47 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 const composeEnhancers = composeWithDevTools({ trace: true, traceLimit: 25, features: { persist: true } })
 // creates the store
 export default (rootReducer, rootSaga) => {
-    /* ------------- Redux Configuration ------------- */
+  /* ------------- Redux Configuration ------------- */
 
-    const middleware = []
-    const enhancers = []
+  const middleware = []
+  const enhancers = []
 
-    /* ------------- Analytics Middleware ------------- */
-    // middleware.push(ScreenTracking)
+  /* ------------- Analytics Middleware ------------- */
+  // middleware.push(ScreenTracking)
 
-    /* ------------- Saga Middleware ------------- */
+  /* ------------- Saga Middleware ------------- */
 
-    const sagaMonitor = null
-    const sagaMiddleware = createSagaMiddleware({ sagaMonitor })
-    middleware.push(sagaMiddleware)
+  const sagaMonitor = null
+  const sagaMiddleware = createSagaMiddleware({ sagaMonitor })
+  middleware.push(sagaMiddleware)
 
-    /* ------------- Logger Middleware ------------- */
-    if (__DEV__) {
-        middleware.push(logger)
-    } else if (__DEV__) {
-        // const createDebugger = require('redux-flipper').default
-        // const reduxDebugger = createDebugger()
-        // middleware.push(reduxDebugger)
-    }
+  /* ------------- Logger Middleware ------------- */
+  if (__DEV__) {
+    middleware.push(logger)
+  } else if (__DEV__) {
+    // const createDebugger = require('redux-flipper').default
+    // const reduxDebugger = createDebugger()
+    // middleware.push(reduxDebugger)
+  }
 
-    /* ------------- Assemble Middleware ------------- */
+  /* ------------- Assemble Middleware ------------- */
 
-    enhancers.push(composeEnhancers((applyMiddleware(...middleware))))
-    const store = createStore(rootReducer, compose(...enhancers))
+  enhancers.push(composeEnhancers((applyMiddleware(...middleware))))
+  const store = createStore(rootReducer, compose(...enhancers))
 
-    // configure persistStore and check reducer version number
-    let persistor = null
-    if (ReduxPersist.active) {
-        persistor = Rehydration.updateReducers(store)
-    }
+  // configure persistStore and check reducer version number
+  let persistor = null
+  if (ReduxPersist.active) {
+    persistor = Rehydration.updateReducers(store)
+  }
 
-    // kick off root saga
-    const sagasManager = sagaMiddleware.run(rootSaga)
+  // kick off root saga
+  const sagasManager = sagaMiddleware.run(rootSaga)
 
-    return {
-        store,
-        persistor,
-        sagasManager,
-        sagaMiddleware
-    }
+  return {
+    store,
+    persistor,
+    sagasManager,
+    sagaMiddleware
+  }
 }

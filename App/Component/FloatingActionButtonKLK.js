@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: -4 },
     shadowOpacity: 5,
     shadowRadius: 4,
-    elevation: 4, 
+    elevation: 4
   },
   buttonContainer: {
     marginTop: 12,

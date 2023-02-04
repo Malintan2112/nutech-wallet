@@ -8,8 +8,8 @@ const sm = 10
 const xl = 14
 
 const Fonts = {
-    FontsFamily: { fontRegular, fontMedium, fontBold, fontSemiBold },
-    FontSize: { md, sm, xl }
+  FontsFamily: { fontRegular, fontMedium, fontBold, fontSemiBold },
+  FontSize: { md, sm, xl }
 }
 
 export default Fonts

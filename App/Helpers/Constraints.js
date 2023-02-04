@@ -85,7 +85,7 @@ const Constraints = {
     presence: {
       allowEmpty: false,
       message: '^Kata sandi tidak boleh kosong'
-    },
+    }
   },
   password: {
     presence: {

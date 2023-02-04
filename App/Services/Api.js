@@ -2,8 +2,7 @@
 import apisauce from 'apisauce'
 
 // let apiUrl = config.apiURL
-let apiUrl = 'https://jsonplaceholder.typicode.com'
-
+const apiUrl = 'https://jsonplaceholder.typicode.com'
 
 // our "constructor"
 const create = (baseURL = apiUrl) => {
@@ -36,7 +35,6 @@ const create = (baseURL = apiUrl) => {
     // }
   })
 
-
   const headerWithToken = (authorization) => {
     return {
       headers: {
@@ -52,7 +50,6 @@ const create = (baseURL = apiUrl) => {
     const naviMonitor = (response) => console.log('API DEBUG! response =', response)
     apiWrapper.addMonitor(naviMonitor)
   }
-
 
   // ------
   // STEP 2
@@ -74,8 +71,6 @@ const create = (baseURL = apiUrl) => {
     return apiWrapper.get('/todos/')
   }
 
-
-
   // ------
   // STEP 3
   // ------
@@ -90,7 +85,7 @@ const create = (baseURL = apiUrl) => {
   //
   return {
     // a list of the API functions from step 2
-    getBanner,
+    getBanner
 
   }
 }
