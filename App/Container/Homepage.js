@@ -16,6 +16,8 @@ const Homepage = ({ navigation }) => {
 
   const [statusBarCollor, setStatusBarColor] = useState(Colors.BLUE_MOON)
   const balance = useSelector(state => state.general.balance)
+  const user = useSelector(state => state.general.user)
+
 
   const { get, data } = useEzFetch()
 
@@ -27,11 +29,17 @@ const Homepage = ({ navigation }) => {
     }, [])
   )
 
+  useEffect(()=>{
+    if (isEmpty(user)) {
+      navigation.replace('AuthPage')
+    }
+  },[user])
   useEffect(() => {
     if (data) {
-      dispatch(GeneralAction.setBalance(data?.balance ? data?.balance : 0))
+      if(data?.code === 108) dispatch(GeneralAction.setUserData({}))
+      else dispatch(GeneralAction.setBalance(data?.balance ? data?.balance : 0))
     }
-  }, [data?.balance])
+  }, [data])
   const menuHeaderList = [
     {
       title: 'Listrik',

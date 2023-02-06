@@ -51,7 +51,7 @@ const ProfilePage = () => {
       <View style={localStyles.containerListOuter}>
         <View>
           <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontSemiBold, fontSize: Fonts.FontSize.xl }}>{user?.first_name} {user?.last_name}</Text>
-          <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, fontSize: Fonts.FontSize.xl }}>{maskString(user?.email || '', '*', 5, 'end')}</Text>
+          <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, fontSize: Fonts.FontSize.xl }}>{maskString(user?.email || '', '*', user?.email?.length  - 5, 'start')}</Text>
         </View>
         <View style={{ backgroundColor: Colors.BLUE_COLOR, height: 50, width: 50, borderRadius: 25, justifyContent: 'center', alignItems: 'center' }}>
           <Text allowFontScaling={false} style={{ color: Colors.WHITE_COLOR }}>{getInitials(`${user?.first_name} ${user?.last_name}`)}</Text>

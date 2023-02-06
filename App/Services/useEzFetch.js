@@ -10,7 +10,6 @@ import apisauce from 'apisauce'
 import useIsMounted from './useIsMounted'
 import * as Sessions from '../Services/Sessions'
 
-
 const versionRelease = Platform.select({
   android: config.versionAndroid,
   ios: config.versionIos

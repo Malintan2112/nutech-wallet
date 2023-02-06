@@ -47,8 +47,8 @@ const TopUpPage = (props) => {
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
             {listSuggestion.map((list, index) =>
               <TouchableOpacity
-                onPress={() => { setAmmount(list?.value) }}
-                key={'list suggestion' + index} style={{ width: '32%', paddingVertical: 5, alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: Colors.GRAY_COLOR }}
+                onPress={() => { setAmmount(list?.value); setErrorAmmount(''); }}
+                key={'list suggestion' + index} style={{ width: '32%', paddingVertical: 5, alignItems: 'center', borderRadius: 30, borderWidth: 1, borderColor: Colors.GRAY_COLOR, backgroundColor: list.value === ammount ? '#D9E5F4' : Colors.WHITE_COLOR }}
               >
                 <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, fontSize: Fonts.FontSize.sm, color: Colors.BLACK_COLOR }}>{list?.title}</Text>
               </TouchableOpacity>
@@ -60,7 +60,7 @@ const TopUpPage = (props) => {
               value={ammount}
               keyboardType='decimal-pad'
               onChangeText={(e) => {
-                if(errorAmmount) setErrorAmmount('')
+                if (errorAmmount) setErrorAmmount('')
                 setAmmount(ActionHelpers.numberWithCommas(e.replace(/\./g, '')))
               }}
               placeholder='Minimal Rp10.000'
@@ -93,7 +93,7 @@ const TopUpPage = (props) => {
           }
         }}
       />
-      <ModalStatusProcess ref={modalStatusProcessRef} desc={`Top up sebesar Rp${numberWithCommas(ammount.replace(/\./g, ''))} berhasil`} onRequestClose={()=>{setAmmount('');}} />
+      <ModalStatusProcess ref={modalStatusProcessRef} desc={`Top up sebesar Rp${numberWithCommas(ammount.replace(/\./g, ''))} berhasil`} onRequestClose={() => { setAmmount(''); }} />
       <Loader loading={fetchingPost} />
     </View>
   )
