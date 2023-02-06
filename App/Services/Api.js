@@ -18,8 +18,8 @@ const create = (baseURL = apiUrl) => {
     baseURL: apiUrl,
     headers: {
       'X-Frontend-Type': 'mobile',
-      'x-company-name': 'nomura',
-      'x-apps-name': 'nomura',
+      'x-company-name': 'nutech',
+      'x-apps-name': 'nutech',
       'user-platform': 'mobile'
     },
     // 10 second timeout...

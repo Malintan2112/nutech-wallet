@@ -6,7 +6,7 @@ const REDUX_PERSIST = {
   active: true,
   reducerVersion: '1.5',
   storeConfig: {
-    key: 'nomura12',
+    key: 'nutech12',
     storage: AsyncStorage,
     // Reducer keys that you do NOT want stored to persistence here.
     // blacklist: ['login', 'search', 'nav'],
