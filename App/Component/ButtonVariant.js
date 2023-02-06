@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, Text, ActivityIndicator } from 'react-native'
+import { TouchableOpacity, Text, ActivityIndicator, Keyboard } from 'react-native'
 import Colors from '../Constants/Colors'
 
 /**
@@ -32,7 +32,7 @@ const ButtonVariant = ({
   // mini style (simple style)
   disabled = false,
   loading = false,
-  btnColor = Colors.BLUE_COLOR,
+  btnColor = Colors.BLUE_SKY,
   paddingVertical = 10,
   textColor = 'white',
   borderRadius = 5,
@@ -49,7 +49,7 @@ const ButtonVariant = ({
   }
 
   return (
-    <TouchableOpacity disabled={disabled} style={[{ backgroundColor: type === 'outline' ? disabled ? '#F8F8F8' : 'transparent' : btnColor, borderWidth: type === 'outline' ? borderWidth : 0, borderColor: type === 'outline' ? btnColor : 'transparent', borderRadius: borderRadius, alignItems: 'center', paddingVertical: paddingVertical }, containerStyle]} onPress={onPress}>
+    <TouchableOpacity disabled={disabled} style={[{ backgroundColor: type === 'outline' ? disabled ? '#F8F8F8' : 'transparent' : btnColor, borderWidth: type === 'outline' ? borderWidth : 0, borderColor: type === 'outline' ? btnColor : 'transparent', borderRadius: borderRadius, alignItems: 'center', paddingVertical: paddingVertical }, containerStyle]} onPress={() => { Keyboard.dismiss(); onPress(); }}>
       {loading ? <ActivityIndicator size='small' color={type === 'outline' ? disabled ? '#A0A0A0' : btnColor : textColor} /> : <Text style={[{ color: type === 'outline' ? disabled ? '#A0A0A0' : btnColor : textColor, fontSize: fontSize, fontFamily: fontFamily }, textStyle]}>{text}</Text>}
     </TouchableOpacity>
   )

@@ -1,18 +1,28 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Text, View, StatusBar, FlatList, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native'
 import FloatingActionContainer from '../Component/FloatingActionButtonKLK'
 import Header from '../Component/Header'
 import Colors from '../Constants/Colors'
 import Fonts from '../Constants/Fonts'
-import ActionHelpers from '../Helpers/ActionHelpers'
+import ActionHelpers, { numberWithCommas } from '../Helpers/ActionHelpers'
 import isEmpty from 'lodash/isEmpty'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import Loader from '../Component/Loader'
+import ModalStatusProcess from '../Component/ModalStatusProcess'
+import { useDispatch, useSelector } from 'react-redux'
+import useEzFetch from '../Services/useEzFetch'
+import GeneralAction from '../Redux/GeneralRedux'
+
 
 const TransferPage = (props) => {
   const [ammount, setAmmount] = useState('')
   const [errorAmmount, setErrorAmmount] = useState('')
   const [contactPerson, setContactPerson] = useState('')
+  const balance = useSelector(state => state.general.balance)
+  const dispatch = useDispatch()
 
+  const modalStatusProcessRef = useRef(null)
+  const { post, fetchingPost } = useEzFetch()
   return (
     <View style={{ flex: 1, backgroundColor: Colors.WHITE_COLOR }}>
       <Header title='Transfer' />
@@ -32,7 +42,7 @@ const TransferPage = (props) => {
             <Image source={require('../Assets/Images/loginRegister/logo.webp')} style={{ width: 42, height: 53 }} resizeMode='contain' />
             <View style={{ marginLeft: 10 }}>
               <Text allowFontScaling={false} style={{ fontSize: Fonts.FontSize.sm, fontFamily: Fonts.FontsFamily.fontSemiBold }}>Nutech Wallet</Text>
-              <Text allowFontScaling={false} style={{ fontSize: Fonts.FontSize.sm, color: Colors.GRAY_COLOR, fontFamily: Fonts.FontsFamily.fontRegular }}>Saldo <Text allowFontScaling={false} style={{ color: Colors.BLACK_COLOR }}>Rp500.000</Text></Text>
+              <Text allowFontScaling={false} style={{ fontSize: Fonts.FontSize.sm, color: Colors.GRAY_COLOR, fontFamily: Fonts.FontsFamily.fontRegular }}>Saldo <Text allowFontScaling={false} style={{ color: Colors.BLACK_COLOR }}>Rp{numberWithCommas(balance)}</Text></Text>
             </View>
           </View>
           <Text allowFontScaling={false} style={{ marginTop: 20, fontSize: 10, fontFamily: Fonts.FontsFamily.fontRegular, color: Colors.GRAY_DARK_COLOR }}>Nominal Transfer</Text>
@@ -41,6 +51,7 @@ const TransferPage = (props) => {
               value={ammount}
               keyboardType='decimal-pad'
               onChangeText={(e) => {
+                if(errorAmmount) setErrorAmmount('')
                 setAmmount(ActionHelpers.numberWithCommas(e.replace(/\./g, '')))
               }}
               placeholder='Minimal Rp10.000'
@@ -55,13 +66,26 @@ const TransferPage = (props) => {
         keyExtractor={(item, index) => `history transfer ${index}`}
         disabled={isEmpty(ammount) || isEmpty(contactPerson)}
         onPressPrimary={() => {
-          if (ammount.replace(/\./g, '') < 10000) {
+          const ammountFix = ammount.replace(/\./g, '')
+          if (ammountFix < 10000) {
             setErrorAmmount('Nominal tidak boleh kurang dari Rp10.000')
+          } else if (ammount.replace(/\./g, '') > balance) {
+            setErrorAmmount('Saldo anda tidak mencukupi')
           } else {
-            setErrorAmmount('')
+            post('/transfer', { amount: ammountFix }, { authorization: true }, ({ response }) => {
+              if (response.status === 200) {
+                modalStatusProcessRef.current.setModal(true)
+                const balanceFix = parseInt(balance) - parseInt(ammountFix)
+                dispatch(GeneralAction.setBalance(balanceFix))
+              } else {
+                setErrorAmmount(response?.message || 'Terjadi kesalahan koneksi')
+              }
+            })
           }
         }}
       />
+      <Loader loading={fetchingPost} />
+      <ModalStatusProcess ref={modalStatusProcessRef} desc={`Transfer sebesar Rp${numberWithCommas(ammount.replace(/\./g, ''))} berhasil`} onRequestClose={() => { setAmmount(''); setContactPerson(''); }} />
     </View>
   )
 }

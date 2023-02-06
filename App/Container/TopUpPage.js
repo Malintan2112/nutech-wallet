@@ -1,15 +1,26 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import { Text, View, StatusBar, FlatList, TextInput, Image, ScrollView, TouchableOpacity } from 'react-native'
 import FloatingActionContainer from '../Component/FloatingActionButtonKLK'
 import Header from '../Component/Header'
 import Colors from '../Constants/Colors'
 import Fonts from '../Constants/Fonts'
-import ActionHelpers from '../Helpers/ActionHelpers'
+import ActionHelpers, { numberWithCommas } from '../Helpers/ActionHelpers'
 import isEmpty from 'lodash/isEmpty'
+import Loader from '../Component/Loader'
+import ModalStatusProcess from '../Component/ModalStatusProcess'
+import { useDispatch, useSelector } from 'react-redux'
+import useEzFetch from '../Services/useEzFetch'
+import GeneralAction from '../Redux/GeneralRedux'
+
 
 const TopUpPage = (props) => {
   const [ammount, setAmmount] = useState('')
   const [errorAmmount, setErrorAmmount] = useState('')
+  const modalStatusProcessRef = useRef(null)
+  const balance = useSelector(state => state.general.balance)
+  const { post, fetchingPost } = useEzFetch()
+  const dispatch = useDispatch()
+
   const listSuggestion = [
     {
       title: 'Rp100.000',
@@ -31,7 +42,7 @@ const TopUpPage = (props) => {
       <ScrollView>
         <View style={{ paddingHorizontal: 25 }}>
           <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, fontSize: 14, color: Colors.GRAY_DARK_COLOR, textAlign: 'center', marginTop: 30 }}>Saldo Anda</Text>
-          <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, textAlign: 'center', color: Colors.BLUE_COLOR, fontSize: 36, marginBottom: 30 }}>Rp500.000</Text>
+          <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontRegular, textAlign: 'center', color: Colors.BLUE_COLOR, fontSize: 36, marginBottom: 30 }}>Rp{numberWithCommas(balance)}</Text>
           <Text allowFontScaling={false} style={{ fontFamily: Fonts.FontsFamily.fontSemiBold, color: Colors.BLACK_COLOR }}>Pilih Nominal Top Up</Text>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 }}>
             {listSuggestion.map((list, index) =>
@@ -49,6 +60,7 @@ const TopUpPage = (props) => {
               value={ammount}
               keyboardType='decimal-pad'
               onChangeText={(e) => {
+                if(errorAmmount) setErrorAmmount('')
                 setAmmount(ActionHelpers.numberWithCommas(e.replace(/\./g, '')))
               }}
               placeholder='Minimal Rp10.000'
@@ -65,13 +77,24 @@ const TopUpPage = (props) => {
         primaryText='Top Up Sekarang'
         disabled={isEmpty(ammount)}
         onPressPrimary={() => {
-          if (ammount.replace(/\./g, '') < 10000) {
+          const ammountFix = ammount.replace(/\./g, '')
+          if (ammountFix < 10000) {
             setErrorAmmount('Nominal tidak boleh kurang dari Rp10.000')
           } else {
-            setErrorAmmount('')
+            post('/topup', { amount: ammountFix }, { authorization: true }, ({ response }) => {
+              if (response.status === 200) {
+                modalStatusProcessRef.current.setModal(true)
+                const balanceFix = parseInt(balance) + parseInt(ammountFix)
+                dispatch(GeneralAction.setBalance(balanceFix))
+              } else {
+                setErrorAmmount(response?.message || 'Terjadi kesalahan koneksi')
+              }
+            })
           }
         }}
       />
+      <ModalStatusProcess ref={modalStatusProcessRef} desc={`Top up sebesar Rp${numberWithCommas(ammount.replace(/\./g, ''))} berhasil`} onRequestClose={()=>{setAmmount('');}} />
+      <Loader loading={fetchingPost} />
     </View>
   )
 }

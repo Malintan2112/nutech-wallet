@@ -7,14 +7,16 @@ import { getInitials } from '../Helpers/ActionHelpers'
 import isEmpty from 'lodash/isEmpty'
 import Contacts from 'react-native-contacts'
 import Icon from 'react-native-vector-icons/FontAwesome5'
+import Loader from '../Component/Loader'
 
 const ContactListPage = (props) => {
   const [contactList, setContactList] = useState([])
   const [tempContactList, setTempContactList] = useState([])
   const [inputSearch, setInputSearch] = useState('')
   const [erroMsg, setErrorMsg] = useState('')
+  const [isLoading, setLoading] = useState(false)
 
-  const compare = (a, b) => {
+  const sortLogic = (a, b) => {
     if (a.displayName < b.displayName) {
       return -1
     }
@@ -34,13 +36,15 @@ const ContactListPage = (props) => {
         }
       )
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        setLoading(true)
         Contacts.getAll()
           .then((contacts) => {
             if (contacts) {
               const contactFilter = contacts.filter(x => !isEmpty(x.phoneNumbers) && x.phoneNumbers?.[0]?.number.length > 9 && x.displayName[0] !== '+' && x.displayName[0] !== '0')
-              const filterContact = contactFilter.sort(compare)
+              const filterContact = contactFilter.sort(sortLogic)
               setContactList(filterContact)
               setTempContactList(filterContact)
+              setLoading(false)
             }
           })
           .catch((e) => {
@@ -61,7 +65,7 @@ const ContactListPage = (props) => {
     <View style={{ flex: 1, backgroundColor: Colors.WHITE_COLOR }}>
       <Header title='Nomor Kontak' />
       <StatusBar backgroundColor={Colors.WHITE_COLOR} />
-      <View style={{ borderBottomColor: Colors.GRAY_COLOR, borderBottomWidth: 1, justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25 }}>
+      <View style={{ justifyContent: 'space-between', flexDirection: 'row', alignItems: 'center', paddingHorizontal: 25, marginBottom: 5, backgroundColor: Colors.WHITE_COLOR, elevation: 3 }}>
         <Icon name='address-book' style={{ fontSize: 20 }} />
         <TextInput
           allowFontScaling={false}
@@ -109,7 +113,7 @@ const ContactListPage = (props) => {
         </View>
 
       </View>
-
+      <Loader loading={isLoading} />
     </View>
   )
 }

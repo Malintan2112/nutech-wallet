@@ -26,6 +26,17 @@ export const maskString = (str, mask, n = 1, from = 'start') => {
     return str.slice(0, n) + str.slice(n, str.length).replace(/./g, mask)
   }
 }
-const ActionHelpers = { numberWithCommas, getInitials, maskString }
+
+export const capitalizeEachWord = (str) => {
+  const arr = str.toLowerCase().split(' ')
+  for (let i = 0; i < arr.length; i++) {
+    (arr[i] === 'dki' || arr[i] === 'd.i.' || arr[i] === 'nad' || arr[i] === 'ntb' || arr[i] === 'ntt')
+      ? arr[i] = arr[i].toUpperCase()
+      : arr[i] = arr[i].charAt(0).toUpperCase() + arr[i].slice(1)
+  }
+  const str2 = arr.join(' ')
+  return str2
+}
+const ActionHelpers = { numberWithCommas, getInitials, maskString, capitalizeEachWord }
 
 export default ActionHelpers

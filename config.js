@@ -5,7 +5,7 @@ const config = {
   showTahuTextInput: localConfig?.showTahu || false,
   codePushDev: localConfig?.codePushDev || false,
   codePushProd: localConfig?.codePushProd || false,
-  stgApiURL: 'http://192.168.18.106:8000',
+  stgApiURL: 'https://tht-api.nutech-integrasi.app',
   apiURL: 'http://192.168.1.8:8000'
 }
 

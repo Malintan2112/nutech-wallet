@@ -8,6 +8,8 @@ import HistoryPage from '../Container/HistoryPage'
 import TopUpPage from '../Container/TopUpPage'
 import TransferPage from '../Container/TransferPage'
 import ContactListPage from '../Container/ContactListPage'
+import EditProfilePage from '../Container/EditProfilePage'
+import DetailTransactionPage from '../Container/DetailTransactionPage'
 
 const Stack = createStackNavigator()
 
@@ -20,7 +22,8 @@ const StackNavigator = () => (
     <Stack.Screen name='TopUpPage' component={TopUpPage} options={{ ...TransitionPresets.SlideFromRightIOS }} />
     <Stack.Screen name='TransferPage' component={TransferPage} options={{ ...TransitionPresets.SlideFromRightIOS }} />
     <Stack.Screen name='ContactListPage' component={ContactListPage} options={{ ...TransitionPresets.SlideFromRightIOS }} />
-
+    <Stack.Screen name='EditProfilePage' component={EditProfilePage} options={{ ...TransitionPresets.SlideFromRightIOS }} />
+    <Stack.Screen name='DetailTransactionPage' component={DetailTransactionPage} options={{ ...TransitionPresets.SlideFromRightIOS }} />
   </Stack.Navigator>
 )
 

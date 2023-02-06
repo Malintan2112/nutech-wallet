@@ -8,6 +8,8 @@ import config from '../../config.js'
 import isEmpty from 'lodash/isEmpty'
 import apisauce from 'apisauce'
 import useIsMounted from './useIsMounted'
+import * as Sessions from '../Services/Sessions'
+
 
 const versionRelease = Platform.select({
   android: config.versionAndroid,
@@ -102,8 +104,8 @@ const useEzFetch = (url, initialPayload = initialData) => {
       dispatch({ type: 'request' })
       const header = { ...defaultHeader, ...headers }
       if (header.authorization) {
-        const token = await AsyncStorage.getItem('access_token')
-        header.authorization = token
+        const token = Sessions.getValue(Sessions.API_TOKEN)
+        header.Authorization = `Bearer ${token}`
       }
       const res = await api.get(`${param}`, {}, { headers: header })
       response = res
@@ -135,10 +137,10 @@ const useEzFetch = (url, initialPayload = initialData) => {
       dispatch({ type: 'request' })
       const header = { ...defaultHeader, ...headers }
       if (header.authorization) {
-        const token = await AsyncStorage.getItem('access_token')
-        header.authorization = token
+        const token = Sessions.getValue(Sessions.API_TOKEN)
+        header.Authorization = `Bearer ${token}`
       }
-      const res = await api.post(`${param}`, data, { headers: header })
+      const res = await api.post(`${param}`, { ...data }, { headers: header })
       response = res
       await resolved(res)
     } catch (error) {

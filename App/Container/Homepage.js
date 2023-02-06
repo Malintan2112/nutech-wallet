@@ -2,21 +2,36 @@ import React, { useEffect, useRef, useState } from 'react'
 import { FlatList, Image, StatusBar, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import Colors from '../Constants/Colors'
-import GeneralAction from '../Redux/GeneralRedux'
 import ParallaxScroll from '@monterosa/react-native-parallax-scroll'
-import { chunk } from 'lodash'
+import { chunk, isEmpty } from 'lodash'
 import Fonts from '../Constants/Fonts'
 import { useFocusEffect } from '@react-navigation/native'
+import useEzFetch from '../Services/useEzFetch'
+import { numberWithCommas } from '../Helpers/ActionHelpers'
+import GeneralAction from '../Redux/GeneralRedux'
+
+
 
 const Homepage = ({ navigation }) => {
-  const dispatch = useDispatch()
-  const generalData = useSelector(state => state.general)
-  const sheetRef = useRef(null)
+
   const [statusBarCollor, setStatusBarColor] = useState(Colors.BLUE_MOON)
+  const balance = useSelector(state => state.general.balance)
+
+  const { get, data } = useEzFetch()
+
+  const dispatch = useDispatch()
+
+  useFocusEffect(
+    React.useCallback(() => {
+      get('balance', { authorization: true })
+    }, [])
+  )
 
   useEffect(() => {
-    // dispatch(GeneralAction.generalRequest())
-  }, [])
+    if (data) {
+      dispatch(GeneralAction.setBalance(data?.balance ? data?.balance : 0))
+    }
+  }, [data?.balance])
   const menuHeaderList = [
     {
       title: 'Listrik',
@@ -39,7 +54,6 @@ const Homepage = ({ navigation }) => {
       navigate: ''
     }
   ]
-
   const menuContentList = [
     {
       title: 'Top-up',
@@ -103,36 +117,25 @@ const Homepage = ({ navigation }) => {
   const Background = () => {
     return (
       <View style={{ paddingHorizontal: 25, paddingVertical: 25, backgroundColor: Colors.BLUE_MOON }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between'
+          }}
+        >
           <View>
-            <Text
-              allowFontScaling={false} style={{
-                fontFamily: Fonts.FontsFamily.fontSemiBold,
-                fontSize: Fonts.FontSize.xl,
-                color: Colors.BLACK_COLOR
-              }}
-            >Rp500.000
-            </Text>
-            <Text
-              allowFontScaling={false} style={{
-                fontFamily: Fonts.FontsFamily.fontRegular,
-                fontSize: 12,
-                color: Colors.GRAY_DARK_COLOR
-              }}
-            >SPE Points{' '}
-              <Text
-                allowFontScaling={false} style={{
-                  fontFamily: Fonts.FontsFamily.fontSemiBold,
-                  color: Colors.ORANGE_COLOR
-                }}
-              >1.520
-              </Text>
-            </Text>
+            <Text allowFontScaling={false} style={localstyles.ammountCurrenly}>Rp{numberWithCommas(balance)} </Text>
+            <Text allowFontScaling={false} style={localstyles.ammountPointTitle}>NUWallet Points{' '}<Text allowFontScaling={false} style={localstyles.ammountPoint}>1.520 </Text> </Text>
           </View>
           <Image source={require('../Assets/Images/loginRegister/logo.webp')} style={{ width: 42, height: 53 }} resizeMode='contain' />
         </View>
         <View>
-          <View style={{ flexDirection: 'row', justifyContent: 'space-around', marginTop: 20 }}>
+          <View style={{
+            flexDirection: 'row',
+            justifyContent: 'space-around',
+            marginTop: 20
+          }}
+          >
             {menuHeaderList.map((menuHeader, index) => {
               return (
                 <TouchableOpacity
@@ -145,12 +148,7 @@ const Homepage = ({ navigation }) => {
                 >
                   <Image source={menuHeader.image} style={{ width: 48, height: 48 }} />
                   <Text
-                    allowFontScaling={false} style={{
-                      fontFamily: Fonts.FontsFamily.fontMedium,
-                      color: Colors.BLACK_COLOR,
-                      fontSize: 12,
-                      marginTop: 10
-                    }}
+                    allowFontScaling={false} style={localstyles.menuHeaderTitle}
                   >{menuHeader.title}
                   </Text>
                 </TouchableOpacity>
@@ -161,17 +159,7 @@ const Homepage = ({ navigation }) => {
       </View>
     )
   }
-  const Separator = () => {
-    return (
-      <View style={{
-        backgroundColor: Colors.BLUE_MOON,
-        height: 10,
-        width: '100%',
-        marginVertical: 25
-      }}
-      />
-    )
-  }
+  const Separator = () => <View style={localstyles.separator} />
   return (
     <>
       <StatusBar backgroundColor={statusBarCollor} />
@@ -181,7 +169,6 @@ const Homepage = ({ navigation }) => {
         parallaxHeight={190}
         renderHeader={({ animatedValue }) => null}
         renderParallaxBackground={({ animatedValue }) => <Background animatedValue={animatedValue} />}
-
         parallaxBackgroundScrollSpeed={5}
         parallaxForegroundScrollSpeed={2.5}
         onChangeHeaderVisibility={(isVisible) => {
@@ -199,13 +186,7 @@ const Homepage = ({ navigation }) => {
               <View>
                 {chunk(menuContentList, 4).map((outerMenuContent, indexOuter) => {
                   return (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-evenly',
-                        marginTop: 20
-                      }} key={'outerMenu' + indexOuter}
-                    >
+                    <View style={localstyles.outerMenuContent} key={'outerMenu' + indexOuter}>
                       {outerMenuContent.map((menuHeader, index) => {
                         return (
                           <TouchableOpacity
@@ -227,7 +208,7 @@ const Homepage = ({ navigation }) => {
             </View>
             <Separator />
             <View>
-              <Text style={{ marginLeft: 25, fontFamily: Fonts.FontsFamily.fontSemiBold, color: Colors.BLACK_COLOR }}>Promo dan Info</Text>
+              <Text style={localstyles.titlePromoInfo}>Promo dan Info </Text>
               <FlatList
                 horizontal
                 data={promoInfoList}
@@ -235,7 +216,9 @@ const Homepage = ({ navigation }) => {
                 renderItem={({ item, index }) => {
                   return (
                     <View style={{ paddingTop: 5, paddingBottom: 20 }}>
-                      <Image source={item?.image} style={{ height: 125, width: 325, marginLeft: 10 }} resizeMode='contain' />
+                      <Image
+                        source={item?.image} style={localstyles.imagePromoInfo} resizeMode='contain'
+                      />
                     </View>
                   )
                 }}
@@ -243,7 +226,13 @@ const Homepage = ({ navigation }) => {
             </View>
             <Separator />
             <View style={{ paddingBottom: 190 }}>
-              <Text style={{ marginLeft: 25, fontFamily: Fonts.FontsFamily.fontSemiBold, color: Colors.BLACK_COLOR }}>Promo dan Info</Text>
+              <Text style={{
+                marginLeft: 25,
+                fontFamily: Fonts.FontsFamily.fontSemiBold,
+                color: Colors.BLACK_COLOR
+              }}
+              >Promo dan Info
+              </Text>
               {promoInfoList.map((promoInfo, index) => {
                 return (
                   <View style={{ paddingTop: 5, paddingBottom: 20 }} key={'promoInfo2' + index}>
@@ -281,6 +270,47 @@ const localstyles = StyleSheet.create({
     borderRadius: 5,
     alignSelf: 'center',
     marginTop: 10
+  },
+  ammountCurrenly: {
+    fontFamily: Fonts.FontsFamily.fontSemiBold,
+    fontSize: Fonts.FontSize.xl,
+    color: Colors.BLACK_COLOR
+  },
+  ammountPointTitle: {
+    fontFamily: Fonts.FontsFamily.fontRegular,
+    fontSize: 12,
+    color: Colors.GRAY_DARK_COLOR
+  },
+  ammountPoint: {
+    fontFamily: Fonts.FontsFamily.fontSemiBold,
+    color: Colors.ORANGE_COLOR
+  },
+  menuHeaderTitle: {
+    fontFamily: Fonts.FontsFamily.fontMedium,
+    color: Colors.BLACK_COLOR,
+    fontSize: 12,
+    marginTop: 10
+  },
+  outerMenuContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    marginTop: 20
+  },
+  titlePromoInfo: {
+    marginLeft: 25,
+    fontFamily: Fonts.FontsFamily.fontSemiBold,
+    color: Colors.BLACK_COLOR
+  },
+  separator: {
+    backgroundColor: Colors.BLUE_MOON,
+    height: 10,
+    width: '100%',
+    marginVertical: 25
+  },
+  imagePromoInfo: {
+    height: 125,
+    width: 325,
+    marginLeft: 10
   }
 })
 export default Homepage

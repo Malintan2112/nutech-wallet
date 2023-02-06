@@ -6,6 +6,11 @@ import Icon from 'react-native-vector-icons/dist/FontAwesome'
 import * as Sessions from '../Services/Sessions'
 import { useDispatch } from 'react-redux'
 import Fonts from '../Constants/Fonts'
+import isEmpty from 'lodash/isEmpty'
+
+const { width, height } = Dimensions.get('screen')
+const refineWidth = 392.72727272727275
+const heightFooter = (180 / refineWidth) * width
 
 const CodePushService = props => {
   const [status, setStatus] = useState(0)
@@ -25,8 +30,8 @@ const CodePushService = props => {
   const doneCodePush = () => {
     Sessions.prepare()
       .then(dataSession => {
-        // props.navigation.replace('Homepage');
-        props.navigation.replace('AuthPage')
+        if (!isEmpty(dataSession?.[Sessions.API_TOKEN])) props.navigation.replace('Homepage');
+        else props.navigation.replace('AuthPage');
       })
       .catch(err => { })
   }
@@ -74,47 +79,15 @@ const CodePushService = props => {
       .catch((err = {}) => console.log(err))
   }, [])
   useEffect(() => { }, [])
-  const { width, height } = Dimensions.get('screen')
-  const refineWidth = 392.72727272727275
-  const heightFooter = (180 / refineWidth) * width
+
   return (
     <View style={{ height: '100%', width: '100%', backgroundColor: 'white' }}>
-      <View
-        style={{
-          position: 'absolute',
-          zIndex: 1,
-          justifyContent: 'center',
-          flex: 1,
-          width: '100%',
-          height: height - heightFooter + 90
-        }}
-      >
+      <View style={localStyles.containerCodePush} >
         <View>
-          <Image
-            source={require('../Assets/Images/loginRegister/logo.webp')}
-            style={{
-              width: 90,
-              height: 100,
-              alignSelf: 'center',
-              marginBottom: 30
-            }}
-            resizeMode='contain'
-          />
-
+          <Image source={require('../Assets/Images/loginRegister/logo.webp')} style={localStyles.imgLogo} resizeMode='contain' />
         </View>
         <View>
-          <Text
-            allowFontScaling={false}
-            style={{
-              color: '#313339',
-              width: 250,
-              alignSelf: 'center',
-              fontFamily: 'Poppins-Regular',
-              fontSize: 10,
-              marginBottom: 10,
-              textAlign: 'center'
-            }}
-          >
+          <Text allowFontScaling={false} style={localStyles.txtDesc}>
             Lebih aman, cepat dan terjangkau dengan <Text style={{ fontFamily: Fonts.FontsFamily.fontBold }}>Nutech Wallet</Text>
           </Text>
           <View style={{ alignSelf: 'center' }}>
@@ -128,69 +101,83 @@ const CodePushService = props => {
                     width={width * 0.7}
                     color='#F4B120'
                   />
-                  <Text
-                    allowFontScaling={false}
-                    style={{
-                      color: '#313339',
-                      alignSelf: 'center',
-                      fontFamily: 'Poppins-Regular',
-                      fontSize: 8,
-                      marginTop: 5,
-                      marginRight: 5,
-                      textAlign: 'center'
-                    }}
-                  >
-                    {desc[status]}
-                  </Text>
+                  <Text allowFontScaling={false} style={localStyles.descStatus}  > {desc[status]}</Text>
                 </View>
-                )
+              )
               : (
                 <View style={{ flexDirection: 'row' }}>
-                  <Text
-                    allowFontScaling={false}
-                    style={{
-                      color: '#313339',
-                      alignSelf: 'center',
-                      fontFamily: 'Poppins-Regular',
-                      fontSize: 8,
-                      marginRight: 5,
-                      textAlign: 'center'
-                    }}
-                  >
-                    {desc[status]}
-                  </Text>
+                  <Text allowFontScaling={false} style={localStyles.descStatusSuccess}>  {desc[status]}  </Text>
                   {status === 0
                     ? (
                       <Icon name='check' size={10} color='#377149' />
-                      )
+                    )
                     : status === 1
                       ? (
                         <Icon name='refresh' size={10} color='#F4B120' />
-                        )
+                      )
                       : (
                         <ActivityIndicator color='#0000ff' size={10} />
-                        )}
+                      )}
                 </View>
-                )}
+              )}
           </View>
         </View>
       </View>
-      <Text
-        style={{
-          color: '#C6C7CB',
-          width: 250,
-          alignSelf: 'center',
-          fontFamily: 'Poppins-Regular',
-          fontSize: 8,
-          position: 'absolute',
-          textAlign: 'center',
-          bottom: heightFooter - 50
-        }}
-      >
-        Version 1.0.0 v12
-      </Text>
+      <Text allowFontScaling={false}  style={localStyles.versionApps} > Version 1.0.0 v1  </Text>
     </View>
   )
 }
 
+const localStyles = {
+  containerCodePush: {
+    position: 'absolute',
+    zIndex: 1,
+    justifyContent: 'center',
+    flex: 1,
+    width: '100%',
+    height: height - heightFooter + 90
+  },
+  imgLogo: {
+    width: 150,
+    height: 150,
+    alignSelf: 'center',
+    marginBottom: 30
+  },
+  txtDesc: {
+    color: '#313339',
+    width: 250,
+    alignSelf: 'center',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 10,
+    marginBottom: 10,
+    textAlign: 'center'
+  },
+  descStatus: {
+    color: '#313339',
+    alignSelf: 'center',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 8,
+    marginTop: 5,
+    marginRight: 5,
+    textAlign: 'center'
+  },
+  descStatusSuccess: {
+    color: '#313339',
+    alignSelf: 'center',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 8,
+    marginRight: 5,
+    textAlign: 'center'
+  },
+  versionApps: {
+    color: '#C6C7CB',
+    width: 250,
+    alignSelf: 'center',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 8,
+    position: 'absolute',
+    textAlign: 'center',
+    bottom: heightFooter - 50
+  }
+}
 export default CodePushService

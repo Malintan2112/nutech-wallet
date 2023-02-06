@@ -58,7 +58,7 @@ const SESSION_KEY = '@Session' // ini sebagai penanda di Asyncstorage bahwa ini 
  *
  * @return {Boolean}
  */
-export function setValue (key, value) {
+export async function setValue(key, value) {
   try {
     if (!DATA_SESSION) {
       DATA_SESSION = {}
@@ -68,7 +68,8 @@ export function setValue (key, value) {
 
     const sessionData = JSON.stringify(DATA_SESSION)
     console.log(TAG + ' setValue', 'Key: ' + key, 'Value: ' + value)
-    AsyncStorage.setItem(SESSION_KEY, sessionData)
+    await AsyncStorage.setItem(SESSION_KEY, sessionData)
+    await prepare()
     return true
   } catch (error) {
     console.log(TAG + ' setValue Error', error)
@@ -84,7 +85,7 @@ export function setValue (key, value) {
  *
  * @return {Any} Value of Session key
  */
-export function getValue (key, default_value = '') {
+export function getValue(key, default_value = '') {
   try {
     const value = DATA_SESSION[key]
     console.log(
@@ -101,7 +102,7 @@ export function getValue (key, default_value = '') {
 /**
  * @void Destroy Session
  */
-export function destroy () {
+export function destroy() {
   DATA_SESSION = {}
   AsyncStorage.removeItem(SESSION_KEY)
 }
@@ -110,7 +111,7 @@ export function destroy () {
  * Prepare Session Data
  * @return {Promise}
  */
-export function prepare () {
+export function prepare() {
   return new Promise((resolve, reject) => {
     AsyncStorage.getItem(SESSION_KEY)
       .then(value => {

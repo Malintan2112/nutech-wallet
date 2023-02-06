@@ -1,6 +1,8 @@
 import { View, Text, TextInput, TouchableOpacity } from 'react-native'
-import React, { useState } from 'react'
+import React, { forwardRef, useState } from 'react'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import IconFA from 'react-native-vector-icons/FontAwesome5'
+
 import { Navigate } from '../Services/NavigationService'
 import Colors from '../Constants/Colors'
 
@@ -39,8 +41,9 @@ import Colors from '../Constants/Colors'
  *
  */
 
-const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType = 'default', withAction = false, actionNavigateTo = '', error = false, msgError = '', disabled = false, verified = false, phoneNumber = false, value = '', password = false, forgotAction = [false], withActionEye = false, unverified = false, unverifiedMessage = '', unverifiedActionNavigateTo = '', multiline = false, onChangeText = null, onBlur = null, onEndEditing = null, isCalendar = false, onFocus = null, isPicker = false, pointerEvents = undefined, width = undefined, isBottomTitle = false, titleStyle = {}, desc = null, hint = '', autoCapitalize = 'sentences', onPressVerification = () => { }, ref }) => {
+const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType = 'default', withAction = false, actionNavigateTo = '', error = false, msgError = '', disabled = false, verified = false, phoneNumber = false, value = '', password = false, forgotAction = [false], withActionEye = false, unverified = false, unverifiedMessage = '', unverifiedActionNavigateTo = '', multiline = false, onChangeText = null, onBlur = null, onEndEditing = null, isCalendar = false, onFocus = null, isPicker = false, pointerEvents = undefined, width = undefined, isBottomTitle = false, titleStyle = {}, desc = null, hint = '', autoCapitalize = 'sentences', onPressVerification = () => { }, onSubmitEditing = () => { }, withEdited = false }, ref) => {
   const [lockPass, setLockPass] = useState(password)
+  const [isDisable, setDisable] = useState(disabled)
   return (
     <View style={{ marginVertical: 8 }}>
 
@@ -58,7 +61,7 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
       </View>
 
       {/* Container Input */}
-      <View pointerEvents={pointerEvents} style={{ flexDirection: 'row', borderWidth: 1, borderRadius: 10, borderColor: error || msgError ? '#E01B0E' : '#E3E4E7', backgroundColor: !disabled ? 'white' : '#F3F4F5', overflow: 'hidden', width: width }}>
+      <View pointerEvents={pointerEvents} style={{ flexDirection: 'row', borderWidth: isDisable ? 0 : 1, borderRadius: 10, borderColor: error || msgError ? '#E01B0E' : '#E3E4E7', backgroundColor: !isDisable ? 'white' : '#F3F4F5', overflow: 'hidden', width: width }}>
 
         {/* Left Section */}
         {
@@ -81,7 +84,7 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
             height: multiline ? 100 : 45,
             fontFamily: 'Inter-Regular',
             fontSize: 15,
-            color: !disabled ? 'black' : 'gray',
+            color: !isDisable ? 'black' : 'gray',
             textAlignVertical: 'top'
             // minHeight: multiline ? 100 : 0
           }}
@@ -90,12 +93,13 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
           onEndEditing={onEndEditing}
           value={value}
           keyboardType={keyboardType}
-          editable={!disabled}
+          editable={!isDisable}
           maxLength={maxLength}
           secureTextEntry={lockPass}
           placeholder={placeholder}
           multiline={multiline}
           onFocus={onFocus}
+          onSubmitEditing={onSubmitEditing}
         />
 
         {/* Right Section */}
@@ -115,12 +119,18 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
             </TouchableOpacity>)
         }
         {
+          (withEdited && isDisable) && (
+            <TouchableOpacity style={{ justifyContent: 'center', paddingHorizontal: 10, backgroundColor: Colors.BLUE_SKY }} onPress={() => setDisable(false)}>
+              <IconFA name='edit' size={20} color={Colors.WHITE_COLOR} />
+            </TouchableOpacity>)
+        }
+        {
           isCalendar
             ? (
               <View style={{ justifyContent: 'center', paddingHorizontal: 10 }}>
                 <Icon name='calendar-week' size={20} color='#313339' />
               </View>
-              )
+            )
             : null
         }
         {
@@ -129,7 +139,7 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
               <View style={{ justifyContent: 'center', paddingHorizontal: 10 }}>
                 <Icon name='chevron-down' size={20} color='#313339' />
               </View>
-              )
+            )
             : null
         }
       </View>
@@ -167,4 +177,4 @@ const InputBox = ({ title = '', placeholder = '', maxLength = null, keyboardType
   )
 }
 
-export default InputBox
+export default forwardRef(InputBox)
